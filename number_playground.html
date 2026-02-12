@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary & Number System Playground</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+        body {
+            background: #0a0e14;
+            color: #e6e9f0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+        h1 {
+            color: #ffcb6b;
+            border-bottom: 2px solid #4a5361;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #c3e88d;
+            font-size: 1.3rem;
+            margin-top: 30px;
+        }
+        .card {
+            background: #1a1f26;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            border-left: 4px solid #82aaff;
+        }
+        .input-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        input, select {
+            background: #0a0e14;
+            color: #e6e9f0;
+            border: 1px solid #4a5361;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-family: 'Courier New', monospace;
+        }
+        input:focus {
+            outline: none;
+            border-color: #82aaff;
+        }
+        button {
+            background: #82aaff;
+            color: #0a0e14;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        button:hover {
+            background: #a6c1ff;
+            transform: translateY(-2px);
+        }
+        .result-box {
+            background: #0a0e14;
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 15px;
+            border: 1px solid #4a5361;
+        }
+        .binary-row {
+            display: flex;
+            gap: 5px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        .bit {
+            background: #2a313c;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            min-width: 45px;
+            text-align: center;
+            border-bottom: 3px solid transparent;
+        }
+        .bit.msb {
+            border-bottom-color: #f07178;
+        }
+        .bit.lsb {
+            border-bottom-color: #c3e88d;
+        }
+        .bit.exponent {
+            background: #2e3b4e;
+            border-bottom-color: #ffcb6b;
+        }
+        .bit.mantissa {
+            background: #28343e;
+            border-bottom-color: #c3e88d;
+        }
+        .step {
+            padding: 10px;
+            margin: 8px 0;
+            background: #1e242c;
+            border-radius: 4px;
+            border-left: 3px solid #ffcb6b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #4a5361;
+        }
+        .value-highlight {
+            color: #ffcb6b;
+            font-weight: bold;
+        }
+        .note {
+            color: #939dab;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔢 Binary & Number System Playground</h1>
+        <p style="color: #939dab;">See how numbers are really represented in computers. Step-by-step conversions, signed integers, and IEEE-754 floating point.</p>
+
+        <!-- =============== CONVERTER CARD =============== -->
+        <div class="card">
+            <h2>📐 Base Converter</h2>
+            <div class="input-group">
+                <input type="text" id="inputValue" placeholder="Enter value (e.g., 42, 1010, 0xFF)" value="42">
+                <select id="inputBase">
+                    <option value="dec">Decimal</option>
+                    <option value="bin">Binary</option>
+                    <option value="hex">Hexadecimal</option>
+                </select>
+                <button onclick="convertNumber()">Convert</button>
+            </div>
+
+            <div id="conversionResults" class="result-box">
+                <!-- Filled by JavaScript -->
+                <table>
+                    <tr><td>Decimal:</td><td id="resultDec">42</td></tr>
+                    <tr><td>Binary:</td><td id="resultBin">101010</td></tr>
+                    <tr><td>Hexadecimal:</td><td id="resultHex">0x2A</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- =============== STEP-BY-STEP CARD =============== -->
+        <div class="card">
+            <h2>📝 Step-by-Step Conversion</h2>
+            <div class="input-group">
+                <input type="number" id="stepNumber" placeholder="Enter decimal number" value="42">
+                <button onclick="showSteps()">Show Steps</button>
+            </div>
+            <div id="stepResults" class="result-box">
+                <div class="step">→ 42 ÷ 2 = 21 remainder 0 (LSB)</div>
+                <div class="step">→ 21 ÷ 2 = 10 remainder 1</div>
+                <div class="step">→ 10 ÷ 2 = 5 remainder 0</div>
+                <div class="step">→ 5 ÷ 2 = 2 remainder 1</div>
+                <div class="step">→ 2 ÷ 2 = 1 remainder 0</div>
+                <div class="step">→ 1 ÷ 2 = 0 remainder 1 (MSB)</div>
+                <div style="margin-top: 15px;">Binary: <span class="value-highlight">101010</span> (read remainders from bottom up)</div>
+            </div>
+        </div>
+
+        <!-- =============== SIGNED INTEGER CARD =============== -->
+        <div class="card">
+            <h2>➕➖ Signed Integers (8-bit)</h2>
+            <div class="input-group">
+                <input type="number" id="signedValue" placeholder="Enter integer (-128 to 127)" value="-42">
+                <button onclick="showSigned()">Analyze</button>
+            </div>
+            <div id="signedResults" class="result-box">
+                <table>
+                    <tr><td>Value:</td><td><span id="signedOriginal">-42</span></td></tr>
+                    <tr><td>Sign-Magnitude:</td><td id="signMag">10101010</td></tr>
+                    <tr><td>One's Complement:</td><td id="onesComp">11010101</td></tr>
+                    <tr><td>Two's Complement:</td><td id="twosComp">11010110</td></tr>
+                </table>
+                <div class="binary-row" id="signedBits">
+                    <span class="bit msb">1</span>
+                    <span class="bit">1</span>
+                    <span class="bit">0</span>
+                    <span class="bit">1</span>
+                    <span class="bit">0</span>
+                    <span class="bit">1</span>
+                    <span class="bit">1</span>
+                    <span class="bit lsb">0</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                    <span style="color: #f07178;">MSB (sign)</span>
+                    <span style="color: #c3e88d;">LSB</span>
+                </div>
+                <div class="note">Two's complement: invert bits + add 1. Most computers use this.</div>
+            </div>
+        </div>
+
+        <!-- =============== IEEE-754 FLOAT CARD =============== -->
+        <div class="card">
+            <h2>🎯 IEEE-754 Floating Point (32-bit)</h2>
+            <div class="input-group">
+                <input type="number" id="floatValue" placeholder="Enter decimal number" value="-42.75" step="any">
+                <button onclick="showFloat()">Visualize</button>
+            </div>
+            <div id="floatResults" class="result-box">
+                <div style="margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span style="color: #f07178;">Sign (1 bit)</span>
+                        <span style="color: #ffcb6b;">Exponent (8 bits)</span>
+                        <span style="color: #c3e88d;">Mantissa (23 bits)</span>
+                    </div>
+                    <div class="binary-row" id="floatBits" style="justify-content: center;">
+                        <span class="bit msb">1</span>
+                        <span class="bit exponent">1</span>
+                        <span class="bit exponent">0</span>
+                        <span class="bit exponent">0</span>
+                        <span class="bit exponent">0</span>
+                        <span class="bit exponent">1</span>
+                        <span class="bit exponent">0</span>
+                        <span class="bit exponent">0</span>
+                        <span class="bit exponent">0</span>
+                        <span class="bit mantissa">1</span>
+                        <span class="bit mantissa">0</span>
+                        <span class="bit mantissa">1</span>
+                        <span class="bit mantissa">0</span>
+                        <span class="bit mantissa">1</span>
+                        <span class="bit mantissa">1</span>
+                        <span class="bit mantissa">0</span>
+                        <span class="bit mantissa">0</span>
+                        <span class="bit mantissa">0</span>
+                        <span class="bit mantissa">0</span>
+                        <span class="bit mantissa">0</span>
+                        <span class="bit mantissa">0</span>
+                        <span class="bit mantissa">0</span>
+                        <span class="bit mantissa">0</span>
+                        <span class="bit mantissa">0</span>
+                        <span class="bit mantissa">0</span>
+                        <span class="bit mantissa">0</span>
+                        <span class="bit mantissa">0</span>
+                        <span class="bit mantissa">0</span>
+                        <span class="bit mantissa">0</span>
+                        <span class="bit mantissa">0</span>
+                        <span class="bit mantissa">0</span>
+                        <span class="bit mantissa lsb">0</span>
+                    </div>
+                </div>
+                <table>
+                    <tr><td>Sign:</td><td id="floatSign">1 (negative)</td></tr>
+                    <tr><td>Exponent (biased):</td><td id="floatExpBiased">10000100 (132)</td></tr>
+                    <tr><td>Exponent (actual):</td><td id="floatExpActual">132 - 127 = 5</td></tr>
+                    <tr><td>Mantissa (binary):</td><td id="floatMantissa">1.0101011...</td></tr>
+                    <tr><td>Value formula:</td><td id="floatFormula">-1 × 1.0101011 × 2⁵</td></tr>
+                    <tr><td>Result:</td><td id="floatResult">-42.75</td></tr>
+                </table>
+                <div class="note">32-bit float: 1 sign bit, 8 exponent bits (bias 127), 23 mantissa bits</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =============== BASE CONVERTER ===============
+        function convertNumber() {
+            const input = document.getElementById('inputValue').value.trim();
+            const base = document.getElementById('inputBase').value;
+            
+            let decimalValue;
+            
+            try {
+                if (base === 'dec') {
+                    decimalValue = parseInt(input, 10);
+                } else if (base === 'bin') {
+                    // Remove spaces and ensure valid binary
+                    const binary = input.replace(/\s/g, '');
+                    decimalValue = parseInt(binary, 2);
+                } else if (base === 'hex') {
+                    // Remove 0x prefix if present
+                    const hex = input.replace(/^0x/i, '');
+                    decimalValue = parseInt(hex, 16);
+                }
+                
+                if (isNaN(decimalValue)) throw new Error('Invalid number');
+                
+                document.getElementById('resultDec').textContent = decimalValue;
+                document.getElementById('resultBin').textContent = decimalValue.toString(2);
+                document.getElementById('resultHex').textContent = '0x' + decimalValue.toString(16).toUpperCase();
+                
+            } catch (e) {
+                document.getElementById('resultDec').textContent = 'Invalid input';
+                document.getElementById('resultBin').textContent = '-';
+                document.getElementById('resultHex').textContent = '-';
+            }
+        }
+
+        // =============== STEP-BY-STEP ===============
+        function showSteps() {
+            let num = parseInt(document.getElementById('stepNumber').value);
+            if (isNaN(num) || num < 0) {
+                alert('Please enter a positive integer');
+                return;
+            }
+            
+            let steps = [];
+            let original = num;
+            
+            while (num > 0) {
+                let remainder = num % 2;
+                steps.push(`${num} ÷ 2 = ${Math.floor(num/2)} remainder ${remainder}`);
+                num = Math.floor(num / 2);
+            }
+            steps.reverse();
+            
+            let binary = original.toString(2);
+            let html = '';
+            steps.forEach((step, index) => {
+                let direction = index === 0 ? ' (MSB)' : (index === steps.length - 1 ? ' (LSB)' : '');
+                html += `<div class="step">→ ${step}${direction}</div>`;
+            });
+            html += `<div style="margin-top: 15px;">Binary: <span class="value-highlight">${binary}</span> (read remainders from bottom up)</div>`;
+            
+            document.getElementById('stepResults').innerHTML = html;
+        }
+
+        // =============== SIGNED INTEGERS ===============
+        function showSigned() {
+            let value = parseInt(document.getElementById('signedValue').value);
+            if (isNaN(value) || value < -128 || value > 127) {
+                alert('Please enter an integer between -128 and 127');
+                return;
+            }
+            
+            let absValue = Math.abs(value);
+            let signBit = value < 0 ? 1 : 0;
+            
+            // Sign-magnitude: sign bit + absolute value in binary
+            let binAbs = absValue.toString(2).padStart(7, '0');
+            let signMag = signBit + binAbs;
+            
+            // One's complement: for negative, invert all bits
+            let onesComp;
+            if (value >= 0) {
+                onesComp = '0' + value.toString(2).padStart(7, '0');
+            } else {
+                let posBinary = absValue.toString(2).padStart(7, '0');
+                onesComp = '1' + posBinary.split('').map(b => b === '0' ? '1' : '0').join('');
+            }
+            
+            // Two's complement: one's complement + 1
+            let twosComp;
+            if (value >= 0) {
+                twosComp = '0' + value.toString(2).padStart(7, '0');
+            } else {
+                // For negative, calculate two's complement
+                let posBinary = absValue.toString(2).padStart(7, '0');
+                let inverted = posBinary.split('').map(b => b === '0' ? '1' : '0').join('');
+                // Add 1 to inverted bits
+                let twos = (parseInt(inverted, 2) + 1).toString(2).padStart(7, '0');
+                if (twos.length > 7) twos = twos.slice(1);
+                twosComp = '1' + twos;
+            }
+            
+            document.getElementById('signedOriginal').textContent = value;
+            document.getElementById('signMag').textContent = signMag;
+            document.getElementById('onesComp').textContent = onesComp;
+            document.getElementById('twosComp').textContent = twosComp;
+            
+            // Update bit visualization with two's complement
+            let bits = twosComp.split('');
+            let bitHtml = '';
+            bits.forEach((bit, i) => {
+                let classes = ['bit'];
+                if (i === 0) classes.push('msb');
+                if (i === 7) classes.push('lsb');
+                bitHtml += `<span class="${classes.join(' ')}">${bit}</span>`;
+            });
+            document.getElementById('signedBits').innerHTML = bitHtml;
+        }
+
+        // =============== IEEE-754 FLOATING POINT ===============
+        function showFloat() {
+            let value = parseFloat(document.getElementById('floatValue').value);
+            if (isNaN(value)) {
+                alert('Please enter a valid number');
+                return;
+            }
+            
+            // Get float representation using Float32Array
+            let floatArray = new Float32Array(1);
+            floatArray[0] = value;
+            let intView = new Uint32Array(floatArray.buffer);
+            let bits = intView[0].toString(2).padStart(32, '0');
+            
+            // Extract components
+            let sign = bits[0];
+            let exponent = bits.slice(1, 9);
+            let mantissa = bits.slice(9, 32);
+            
+            // Calculate values
+            let signStr = sign === '1' ? 'negative' : 'positive';
+            let expBiased = parseInt(exponent, 2);
+            let expActual = expBiased - 127;
+            
+            // Build mantissa display
+            let mantissaDisplay = [];
+            for (let i = 0; i < mantissa.length; i++) {
+                mantissaDisplay.push(mantissa[i]);
+            }
+            
+            // Create bit visualization
+            let bitHtml = '';
+            bits.split('').forEach((bit, i) => {
+                let classes = ['bit'];
+                if (i === 0) classes.push('msb');
+                if (i >= 1 && i <= 8) classes.push('exponent');
+                if (i >= 9) classes.push('mantissa');
+                if (i === 31) classes.push('lsb');
+                bitHtml += `<span class="${classes.join(' ')}">${bit}</span>`;
+            });
+            document.getElementById('floatBits').innerHTML = bitHtml;
+            
+            // Mantissa with leading 1
+            let mantissaValue = '1.' + mantissa.slice(0, 8) + '...';
+            
+            document.getElementById('floatSign').textContent = `${sign} (${signStr})`;
+            document.getElementById('floatExpBiased').textContent = `${exponent} (${expBiased})`;
+            document.getElementById('floatExpActual').textContent = `${expBiased} - 127 = ${expActual}`;
+            document.getElementById('floatMantissa').textContent = mantissaValue;
+            document.getElementById('floatFormula').textContent = `${sign === '1' ? '-' : '+'}1 × 1.${mantissa.slice(0, 7)}... × 2${expActual >= 0 ? '⁺' : '⁻'}${Math.abs(expActual)}`;
+            document.getElementById('floatResult').textContent = value;
+        }
+
+        // Initialize with default values
+        window.onload = function() {
+            convertNumber();
+            showSigned();
+            showFloat();
+        };
+    </script>
+</body>
+</html>
